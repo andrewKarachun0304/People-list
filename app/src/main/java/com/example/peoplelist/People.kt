@@ -8,8 +8,7 @@ data class People(val name: String, val surname: String, val age: Int) : Parcela
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readInt()
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
