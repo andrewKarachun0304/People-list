@@ -1,7 +1,7 @@
 package com.example.peoplelist
 
+import android.app.Activity
 import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -11,46 +11,39 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var db: SQLiteDatabase
+    private lateinit var peopleAdapter: PeopleAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val dbHelper = DBHelper(applicationContext)
-        db = dbHelper.writableDatabase
-
-        var peopleAdapter = PeopleAdapter(object : OnListener{
+        peopleAdapter = PeopleAdapter(object : OnListener {
             override fun onClick(people: People) {
-                intent = Intent(this@MainActivity, AddPeopleActivity::class.java)
+                intent = Intent(this@MainActivity, UpdatePeopleActivity::class.java)
                 intent.putExtra("people", people)
-                startActivity(intent)
+                startActivityForResult(intent, 202)
             }
         })
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = peopleAdapter
-        peopleAdapter.updatePeople(getAllPeople())
-    }
-
-    fun getAllPeople(): List<People>{
-        val cursor = db.query("people", null, null, null,
-            null, null, null)
-        var peopleList: ArrayList<People> = ArrayList()
-        if (cursor.moveToFirst()){
-            val nameIndex = cursor.getColumnIndex("name")
-            val surnameIndex = cursor.getColumnIndex("surname")
-            val ageIndex = cursor.getColumnIndex("age")
-
-            do {
-                peopleList.add(People(cursor.getString(nameIndex),
-                    cursor.getString(surnameIndex), cursor.getInt(ageIndex)))
-            }while (cursor.moveToNext())
-        }
-        cursor.close()
-        return peopleList
+        peopleAdapter.updatePeople(App.instance!!.getAllPeople())
     }
 
     fun onClick(view: View) {
+        when (view.id) {
+            R.id.add_people_btn -> {
+                intent = Intent(this@MainActivity, AddPeopleActivity::class.java)
+                startActivityForResult(intent, 101)
+            }
+        }
+    }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK){
+            when(requestCode){
+                101, 202 -> peopleAdapter.updatePeople(App.instance!!.getAllPeople())
+            }
+        }
     }
 }

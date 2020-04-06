@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">PeopleList</string>
+    <string name="name_str">Имя</string>
+    <string name="surname_str">Фамилия</string>
+    <string name="age_str">Возвраст</string>
+    <string name="add_str">Add</string>
+    <string name="update_str">Update</string>
 </resources>
